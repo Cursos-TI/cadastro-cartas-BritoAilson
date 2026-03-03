@@ -6,10 +6,10 @@ int main() {
     char Estado, Cod_Carta[50], Nome_Cidade[50];
 
     printf("Digite a letra do Estado: \n");
-    scanf(" %c", &Estado); // Espaço adicionado
+    scanf(" %c", &Estado); 
 
     printf("Digite o Codigo da Carta: \n");
-    scanf(" %s", Cod_Carta); // Espaço adicionado por segurança
+    scanf(" %s", Cod_Carta); 
 
     printf("Digite o Nome da Cidade: \n");
     scanf(" %s", Nome_Cidade);

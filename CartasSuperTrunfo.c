@@ -5,7 +5,7 @@ int main() {
     float Area_Km, Pib;
     char Estado, Cod_Carta[50], Nome_Cidade[50];
 
-    printf("Digite a letra do Estado: \n");
+    printf("Digite o nome do Estado: \n");
     scanf(" %c", &Estado); 
 
     printf("Digite o Codigo da Carta: \n");

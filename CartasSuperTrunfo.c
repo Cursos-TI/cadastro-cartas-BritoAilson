@@ -2,94 +2,103 @@
 
 /**
  * Desafio Super Trunfo - Nível Aventureiro
- * Regra: Sem strcspn ou funções avançadas de string.
- * Fonte: Entrada Manual -> Transformação: Cálculos Aritméticos -> Destino: Console
+ * Olá! Este script foi desenvolvido para cadastrar e calcular dados de cidades.
+ * Mantivemos a lógica simples (sem funções complexas) para facilitar a leitura.
  */
 
-// Função auxiliar para evitar o "pulo" de inputs no buffer
+// Esta função limpa o "rastro" que o teclado deixa no sistema (o buffer)
+// Evita que o programa pule perguntas ou leia dados errados.
 void limpar_buffer() {
     int c;
     while ((c = getchar()) != '\n' && c != EOF);
 }
 
 int main() {
-    // Variáveis da Carta 1
+    // Definindo as gavetas (variáveis) para guardar as informações da Carta 1
     char estado1[50], cod_carta1[50], nome_cidade1[50];
     int populacao1, num_pont_turistico1;
     float area_km1, pib1;
     float densidade1, pib_per_capita1;
 
-    // Variáveis da Carta 2
+    // Gavetas para a Carta 2
     char estado2[50], cod_carta2[50], nome_cidade2[50];
     int populacao2, num_pont_turistico2;
     float area_km2, pib2;
     float densidade2, pib_per_capita2;
 
-    printf("*** Sistema de Cadastro de Cartas - Super Trunfo ***\n");
+    printf("*** Bem-vindo ao Sistema Super Trunfo! ***\n");
 
-    // --- ENTRADA DE DADOS: CARTA 1 ---
-    printf("\n--- Cadastro da Carta 1 ---\n");
-    printf("Digite o nome do Estado: ");
+    // --- COLETANDO DADOS DA CARTA 1 ---
+    printf("\n--- Vamos cadastrar a primeira cidade ---\n");
+    printf("Qual o nome do Estado? ");
+    
+    /* Por que usamos fgets aqui? 
+       Diferente do scanf, o fgets não se "assusta" com espaços "lê o espaço como ENTER". 
+       Se o usuário digitar "Rio de Janeiro", ele pega o nome completo. 
+       O scanf pararia logo no "Rio", o que quebraria nosso jogo. */
     fgets(estado1, 50, stdin);
     
-    printf("Digite o Codigo da Carta: ");
+    printf("Digite o Código da Carta (ex: A01): ");
     scanf("%49s", cod_carta1);
-    limpar_buffer();
+    limpar_buffer(); // Limpa o buffer para o próximo nome não vir com erro
 
-    printf("Digite o Nome da Cidade: ");
+    printf("Qual o nome da cidade? ");
+    // Usamos fgets de novo para garantir que cidades com nome composto sejam lidas corretamente.
     fgets(nome_cidade1, 50, stdin);
 
-    printf("Digite a Populacao: ");
+    printf("Qual a população? ");
     scanf("%d", &populacao1);
-    printf("Digite a Area em Km: ");
+    printf("Qual a área em Km? ");
     scanf("%f", &area_km1);
-    printf("Digite o PIB (em bilhões): ");
+    printf("Qual o PIB (em bilhões)? ");
     scanf("%f", &pib1);
-    printf("Digite o Numero de Pontos Turisticos: ");
+    printf("Quantos pontos turísticos existem? ");
     scanf("%d", &num_pont_turistico1);
     limpar_buffer();
 
-    // --- ENTRADA DE DADOS: CARTA 2 ---
-    printf("\n--- Cadastro da Carta 2 ---\n");
-    printf("Digite o nome do Estado: ");
+    // --- COLETANDO DADOS DA CARTA 2 ---
+    printf("\n--- Agora, vamos para a segunda cidade ---\n");
+    printf("Nome do Estado: ");
     fgets(estado2, 50, stdin);
 
-    printf("Digite o Codigo da Carta: ");
+    printf("Código da Carta: ");
     scanf("%49s", cod_carta2);
     limpar_buffer();
 
-    printf("Digite o Nome da Cidade: ");
+    printf("Nome da Cidade: ");
     fgets(nome_cidade2, 50, stdin);
 
-    printf("Digite a Populacao: ");
+    printf("População: ");
     scanf("%d", &populacao2);
-    printf("Digite a Area em Km: ");
+    printf("Área em Km: ");
     scanf("%f", &area_km2);
-    printf("Digite o PIB: ");
+    printf("PIB: ");
     scanf("%f", &pib2);
-    printf("Digite o Numero de Pontos Turisticos: ");
+    printf("Pontos Turísticos: ");
     scanf("%d", &num_pont_turistico2);
     limpar_buffer();
 
-    // --- TRANSFORMAÇÃO (Cálculos de Performance) ---
-    // Densidade: Populacao / Area
+    // --- HORA DOS CÁLCULOS (A mágica acontece aqui) ---
+    
+    // Calculamos quantos habitantes vivem em cada km² (Densidade)
     densidade1 = (float)populacao1 / area_km1;
     densidade2 = (float)populacao2 / area_km2;
 
-    // PIB per Capita: (PIB * 1 bilhão) / Populacao
+    // Calculamos a riqueza média por pessoa (PIB per Capita)
+    // Multiplicamos o PIB por 1 bilhão para o valor ficar certinho em reais.
     pib_per_capita1 = (pib1 * 1000000000.0) / (float)populacao1;
     pib_per_capita2 = (pib2 * 1000000000.0) / (float)populacao2;
 
-    // --- EXIBIÇÃO FORMATADA (Destino) ---
+    // --- MOSTRANDO OS RESULTADOS ---
     printf("\n========================================");
-    printf("\nEXIBIÇÃO DAS CARTAS");
+    printf("\n         CARTAS CADASTRADAS");
     
-    // Na exibição, o próprio \n que o fgets capturou ajudará a pular a linha
-    printf("\n\nCarta 1: %sCodigo: %s", nome_cidade1, cod_carta1);
+    // O fgets guarda o "Enter" no final do nome, então a quebra de linha acontece sozinha.
+    printf("\n\nCidade 1: %sCódigo: %s", nome_cidade1, cod_carta1);
     printf("\nDensidade Populacional: %.2f hab/km²", densidade1);
     printf("\nPIB per Capita: %.2f reais", pib_per_capita1);
 
-    printf("\n\nCarta 2: %sCodigo: %s", nome_cidade2, cod_carta2);
+    printf("\n\nCidade 2: %sCódigo: %s", nome_cidade2, cod_carta2);
     printf("\nDensidade Populacional: %.2f hab/km²", densidade2);
     printf("\nPIB per Capita: %.2f reais", pib_per_capita2);
     printf("\n========================================\n");

@@ -2,8 +2,6 @@
 
 /**
  * Desafio Super Trunfo - Nível Aventureiro
- * Olá! Este script foi desenvolvido para cadastrar e calcular dados de cidades.
- * Mantivemos a lógica simples (sem funções complexas) para facilitar a leitura.
  */
 
 // Esta função limpa o "rastro" que o teclado deixa no sistema (o buffer)

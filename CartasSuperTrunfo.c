@@ -1,40 +1,54 @@
 #include <stdio.h>
+#include <string.h>
+
+// Função auxiliar para limpar o buffer do teclado (evita o "pulo" de inputs)
+void limpar_buffer() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
 
 int main() {
-    int Populacao, Num_Pont_Turistico;
-    float Area_Km, Pib;
-    char Estado, Cod_Carta[50], Nome_Cidade[50];
+    int populacao, num_pont_turistico;
+    float area_km, pib;
+    char estado[50], cod_carta[50], nome_cidade[50];
 
-    printf("Digite o nome do Estado: \n");
-    scanf(" %c", &Estado); 
+    // Leitura do Estado (String)
+    printf("Digite o nome do Estado: ");
+    fgets(estado, 50, stdin);
+    estado[strcspn(estado, "\n")] = 0; // Remove o '\n' que o fgets adiciona
 
-    printf("Digite o Codigo da Carta: \n");
-    scanf(" %s", Cod_Carta); 
+    // Leitura do Código
+    printf("Digite o Codigo da Carta: ");
+    scanf("%49s", cod_carta);
+    limpar_buffer(); // Limpa o buffer após scanf
 
-    printf("Digite o Nome da Cidade: \n");
-    scanf(" %s", Nome_Cidade);
+    // Leitura da Cidade
+    printf("Digite o Nome da Cidade: ");
+    fgets(nome_cidade, 50, stdin);
+    nome_cidade[strcspn(nome_cidade, "\n")] = 0;
 
-    printf("Digite a Populacao: \n");
-    scanf(" %d", &Populacao);
+    // Leitura de dados numéricos
+    printf("Digite a Populacao: ");
+    if (scanf("%d", &populacao) != 1) return 1; // Tratamento básico de erro
 
-    printf("Digite o Numero de Pontos Turisticos: \n");
-    scanf(" %d", &Num_Pont_Turistico);
+    printf("Digite o Numero de Pontos Turisticos: ");
+    scanf("%d", &num_pont_turistico);
 
-    printf("Digite a Area em Km: \n");
-    scanf(" %f", &Area_Km);
+    printf("Digite a Area em Km: ");
+    scanf("%f", &area_km);
 
-    printf("Digite o PIB: \n");
-    scanf(" %f", &Pib);
+    printf("Digite o PIB: ");
+    scanf("%f", &pib);
 
     // Saída formatada
     printf("\n--- Dados da Carta ---\n");
-    printf("Estado: %c\n", Estado);
-    printf("Codigo: %s\n", Cod_Carta);
-    printf("Cidade: %s\n", Nome_Cidade);
-    printf("Populacao: %d\n", Populacao);
-    printf("Pontos Turisticos: %d\n", Num_Pont_Turistico);
-    printf("Area: %.2f Km\n", Area_Km);
-    printf("PIB: %.2f\n", Pib);
+    printf("Estado: %s\n", estado);
+    printf("Codigo: %s\n", cod_carta);
+    printf("Cidade: %s\n", nome_cidade);
+    printf("Populacao: %d\n", populacao);
+    printf("Pontos Turisticos: %d\n", num_pont_turistico);
+    printf("Area: %.2f Km\n", area_km);
+    printf("PIB: %.2f\n", pib);
 
     return 0;
 }

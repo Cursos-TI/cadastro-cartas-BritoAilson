@@ -1,8 +1,7 @@
 #include <stdio.h>
 
 /**
- * Desafio Super Trunfo - Nível Aventureiro
- * Versão simplificada: Limpeza de buffer feita diretamente no fluxo.
+ * Desafio Super Trunfo - Nível Aventureiro 
  */
 
 int main() {

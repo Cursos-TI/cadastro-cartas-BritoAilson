@@ -2,19 +2,17 @@ import pandas as pd
 import json
 import os
 import glob
+import platform
 from datetime import datetime
 
-# Configurações de Caminho (Padrão Industrial)
-SOURCE_DIR = r"\\acswpj7\r\Projetos_NR\ITF\Compartilhada\01 - Dados & Projetos\Compartilhada\11 Dados\Base_Soda"
-# O mapeamento pode ser fixo ou carregado da mesma forma
-MAPPING_FILE = os.path.join(SOURCE_DIR, "ponto_produtivo_mes.xlsx - Plan1.csv")
+# --- CONFIGURAÇÃO DINÂMICA DE CAMINHOS ---
+# Se rodar no Windows (Servidor), usa o caminho de rede. Se não, usa o local do Codespaces.
+if platform.system() == "Windows":
+    BASE_PATH = r"\\acswpj7\nr\Projetos_NR\ITF\Compartilhada\01 - Dados & Projetos\Compartilhada\11 Dados\Base_Soda"
+else:
+    BASE_PATH = "/workspaces/cadastro-cartas-BritoAilson/Programacao_C"
 
-def get_latest_file(path, pattern="Log-data-*.csv"):
-    """Localiza o arquivo mais recente baseado na data de modificação."""
-    files = glob.glob(os.path.join(path, pattern))
-    if not files:
-        return None
-    return max(files, key=os.path.getmtime)
+MAPPING_FILE = os.path.join(BASE_PATH, "ponto_produtivo_mes.xlsx - Plan1.csv")
 
 def extract_point_id(row):
     try:
@@ -23,59 +21,54 @@ def extract_point_id(row):
     except:
         return row['id']
 
-def run_analysis():
-    print(f"🔍 Iniciando busca em: {SOURCE_DIR}")
-    
-    latest_log = get_latest_file(SOURCE_DIR)
-    
-    if not latest_log:
-        print("❌ Erro: Nenhum arquivo de log encontrado na pasta.")
+def processar():
+    # 1. Busca automática do log mais recente
+    arquivos = glob.glob(os.path.join(BASE_PATH, "Log-data-*.csv"))
+    if not arquivos:
+        print(f"❌ Nenhum log encontrado em {BASE_PATH}")
         return
 
-    print(f"📄 Processando arquivo mais recente: {os.path.basename(latest_log)}")
-    
-    # Carregamento dos Dados
-    df_logs = pd.read_csv(latest_log)
+    mais_recente = max(arquivos, key=os.path.getmtime)
+    print(f"📂 Analisando: {os.path.basename(mais_recente)}")
+
+    # 2. Leitura dos dados
+    df_logs = pd.read_csv(mais_recente)
     df_map = pd.read_csv(MAPPING_FILE, skiprows=2)
-    
-    # Lógica de Diagnóstico: Filtro de Erros
-    success_codes = ['202', '200', 202, 200]
-    error_df = df_logs[
+
+    # 3. Filtragem de Erros (Lógica de Diagnóstico)
+    erros = df_logs[
         (df_logs['status_processamento'] != 'OK') | 
-        (~df_logs['return'].isin(success_codes))
+        (~df_logs['return'].astype(str).isin(['200', '202']))
     ].copy()
 
-    # Mapeamento e Transformação
-    error_df['extracted_point_id'] = error_df.apply(extract_point_id, axis=1)
-    error_df['extracted_point_id'] = pd.to_numeric(error_df['extracted_point_id'], errors='coerce')
+    if erros.empty:
+        print("✅ Tudo limpo! Nenhum erro encontrado.")
+        return
+
+    # 4. Cruzamento de Dados (Join)
+    erros['extracted_point_id'] = erros.apply(extract_point_id, axis=1)
+    erros['extracted_point_id'] = pd.to_numeric(erros['extracted_point_id'], errors='coerce')
     df_map['cod_ponto_produtivo'] = pd.to_numeric(df_map['cod_ponto_produtivo'], errors='coerce')
-    
-    merged = error_df.merge(df_map, left_on='extracted_point_id', right_on='cod_ponto_produtivo', how='left')
-    
-    # Sugestões Técnicas
-    suggestions = {
-        'Campos incorretos': 'Revisar transformação JSON no Node-RED (Check Float/Int).',
-        'Coleta já realizada': 'Verificar lógica de trigger/deduplicação no CLP.',
-        'Mensagem não recebida': 'Validar conectividade e integridade de pacotes (VLAN/DMZ).',
-        'Erros de datas/lotes': 'Sincronizar NTP e validar status do lote.'
+
+    resultado = erros.merge(df_map, left_on='extracted_point_id', right_on='cod_ponto_produtivo', how='left')
+
+    # 5. Sugestões de Solução (Expert System)
+    dicas = {
+        'Campos incorretos': 'Erro de Schema: Validar se o Node-RED está enviando Float ou Int corretamente.',
+        'Coleta já realizada': 'Deduplicação: O CLP enviou o mesmo trigger duas vezes.',
+        'Mensagem não recebida': 'Rede: Verificar oscilação na VLAN Industrial.',
+        'Erros de datas/lotes': 'Sincronismo: Validar relógio NTP do Gateway.'
     }
-
-    # Consolidação do Relatório
-    merged['item_info'] = merged['entidade'].fillna('') + " (Cod: " + merged['worksheet_cod'].astype(str) + ")"
-    report = merged.groupby(['extracted_point_id', 'nom_ponto_produtivo', 'nom_linha_producao', 'item_info', 'status_processamento']).size().reset_index(name='Qtd')
-    report['Sugestão de Solução'] = report['status_processamento'].map(suggestions).fillna('Analisar logs de postback.')
     
-    # Formatação Final
-    report.columns = ['ID', 'Equipamento', 'Linha/Ponto', 'Item', 'Erro', 'Qtd', 'Sugestão de Solução']
-    report['Equipamento (ID)'] = report['Equipamento'].fillna('Desconhecido') + " (" + report['ID'].astype(str) + ")"
-    final_df = report[['Equipamento (ID)', 'Linha/Ponto', 'Item', 'Erro', 'Qtd', 'Sugestão de Solução']]
+    resultado['Sugestão'] = resultado['status_processamento'].map(dicas).fillna('Analisar postback_description.')
 
-    # Salvamento na Pasta de Destino
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M")
-    output_path = os.path.join(SOURCE_DIR, f"RELATORIO_ERROS_SODA_{timestamp}.csv")
+    # 6. Exportação automática
+    data_hora = datetime.now().strftime("%Y%m%d_%H%M")
+    nome_saida = f"RELATORIO_ERROS_SODA_{data_hora}.csv"
+    caminho_saida = os.path.join(BASE_PATH, nome_saida)
     
-    final_df.to_csv(output_path, index=False, encoding='utf-8-sig')
-    print(f"✅ Relatório gerado com sucesso em: {output_path}")
+    resultado.to_csv(caminho_saida, index=False, encoding='utf-8-sig')
+    print(f"✅ Sucesso! Relatório gerado: {nome_saida}")
 
 if __name__ == "__main__":
-    run_analysis()
+    processar()

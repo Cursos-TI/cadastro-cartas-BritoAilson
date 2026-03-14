@@ -73,7 +73,7 @@ int main() {
     printf("Carta 1 - %s: %.2f\n", cidade1, densidade1);
     printf("Carta 2 - %s: %.2f\n", cidade2, densidade2);
 
-    // Lógica if-else baseada no material de aula
+    // Lógica if-else baseada no material de aula para definir o vencedor
     if (densidade1 < densidade2) {
         printf("Resultado: Carta 1 (%s) venceu!\n", cidade1);
     } else if (densidade2 < densidade1) {

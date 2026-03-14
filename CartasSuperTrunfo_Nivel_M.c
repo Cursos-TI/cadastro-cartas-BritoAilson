@@ -2,7 +2,7 @@
 
 /**
  * Projeto: Super Trunfo Países - Nível Intermediário
- * Aluno: Ailson Brito | Instituição: Estácio de Sá
+ * Aluno: Ailson Brito | Professor: Paulo Sérgio |Instituição: Estácio de Sá
  * Objetivo: Cadastro dinâmico e comparação via Switch/Case
  */
 

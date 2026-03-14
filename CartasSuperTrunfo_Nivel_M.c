@@ -46,7 +46,7 @@ int main() {
     printf("Código da carta (Ex: A02): "); 
     scanf(" %s", cod2);
     printf("Nome da cidade: "); 
-    scanf(" %[^\n]", cidade2);
+    scanf(" %[^\n]", cidade2);// [^\n] para ler string com espaços, ^ funciona como uma negação (significa "não" ou "até encontrar"), \n representa a tecla "Enter" (quebra de linha). Assim, %[^\n] instrui o scanf a ler caracteres até encontrar uma quebra de linha, permitindo que o usuário insira uma string com espaços sem que o scanf pare na primeira palavra.
     printf("População: "); 
     scanf("%lu", &pop2);
     printf("Área (em km²): "); 
@@ -73,7 +73,7 @@ int main() {
     printf("Carta 1 - %s: %.2f\n", cidade1, densidade1);
     printf("Carta 2 - %s: %.2f\n", cidade2, densidade2);
 
-    // Lógica if-else baseada no material de aula
+    // Lógica if-else baseada no material de aula para definir o vencedor
     if (densidade1 < densidade2) {
         printf("Resultado: Carta 1 (%s) venceu!\n", cidade1);
     } else if (densidade2 < densidade1) {
